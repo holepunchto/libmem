@@ -1,0 +1,3 @@
+[submodule "vendor/rpmalloc"]
+	path = vendor/rpmalloc
+	url = git@github.com:mjansson/rpmalloc.git
