@@ -69,8 +69,8 @@ mem_aligned_realloc (void *ptr, size_t alignment, size_t size) {
 }
 
 size_t
-mem_usable_size (void *ptr) {
-  return rpmalloc_usable_size(ptr);
+mem_usable_size (const void *ptr) {
+  return rpmalloc_usable_size((void *) ptr);
 }
 
 void
