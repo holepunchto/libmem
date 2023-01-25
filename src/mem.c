@@ -68,6 +68,11 @@ mem_aligned_realloc (void *ptr, size_t alignment, size_t size) {
   return rpaligned_realloc(ptr, alignment, size, 0, 0);
 }
 
+size_t
+mem_usable_size (void *ptr) {
+  return rpmalloc_usable_size(ptr);
+}
+
 void
 mem_free (void *ptr) {
   rpfree(ptr);

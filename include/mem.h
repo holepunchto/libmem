@@ -48,6 +48,9 @@ mem_realloc (void *ptr, size_t size);
 void *
 mem_aligned_realloc (void *ptr, size_t alignment, size_t size);
 
+size_t
+mem_usable_size (void *ptr);
+
 void
 mem_free (void *ptr);
 
