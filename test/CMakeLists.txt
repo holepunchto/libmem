@@ -14,7 +14,7 @@ foreach(test IN LISTS tests)
   target_include_directories(
     ${test}
     PRIVATE
-      $<TARGET_PROPERTY:mem,INCLUDE_DIRECTORIES>
+      $<TARGET_PROPERTY:mem,INTERFACE_INCLUDE_DIRECTORIES>
   )
 
   add_test(
