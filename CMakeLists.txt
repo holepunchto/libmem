@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-if(WIN32)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
-
 project(mem C)
 
 add_library(mem OBJECT)
@@ -41,6 +35,7 @@ set_target_properties(
   mem_shared
   PROPERTIES
   OUTPUT_NAME mem
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 add_library(mem_static STATIC $<TARGET_OBJECTS:mem>)
