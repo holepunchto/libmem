@@ -8,4 +8,4 @@ See [`include/mem.h`](include/mem.h) for the public API.
 
 ## License
 
-ISC
+Apache-2.0
