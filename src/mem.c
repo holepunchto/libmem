@@ -1,79 +1,147 @@
-#define RPMALLOC_CONFIGURABLE 1
-
-#include <rpmalloc.h>
+#include <mimalloc.h>
 #include <stdbool.h>
 #include <stddef.h>
 
 #include "../include/mem.h"
 
-int
-mem_init (const mem_config_t *config) {
-  if (config == NULL) return rpmalloc_initialize();
+struct mem_heap_s {
+  mi_heap_t *heap;
+};
 
-  return rpmalloc_initialize_config(&(rpmalloc_config_t){
-    .memory_map = config->map,
-    .memory_unmap = config->unmap,
-    .page_size = config->page_size,
-  });
-}
+struct mem_arena_s {
+  mi_arena_id_t id;
+};
 
 int
-mem_destroy () {
-  rpmalloc_finalize();
+mem_heap_init (mem_arena_t *arena, mem_heap_t **result) {
+  mem_heap_t *heap = mi_malloc(sizeof(mem_heap_t));
+
+  if (heap == NULL) return -1;
+
+  if (arena) {
+    heap->heap = mi_heap_new_in_arena(arena->id);
+  } else {
+    heap->heap = mi_heap_new();
+  }
+
+  if (heap->heap == NULL) goto err;
+
+  *result = heap;
 
   return 0;
+
+err:
+  mi_free(heap);
+
+  return -1;
+}
+
+void
+mem_heap_destroy (mem_heap_t *heap) {
+  mi_heap_destroy(heap->heap);
+  mi_free(heap);
 }
 
 int
-mem_thread_init () {
-  rpmalloc_thread_initialize();
+mem_arena_init (void *memory, size_t size, mem_arena_t **result) {
+  mem_arena_t *arena = mi_malloc(sizeof(mem_arena_t));
+
+  if (arena == NULL) return -1;
+
+  bool success = mi_manage_os_memory_ex(
+    memory,
+    size,
+    true /* is_committed */,
+    false /* is_large */,
+    true /* is_zero */,
+    -1,
+    true /* is_exclusive */,
+    &arena->id
+  );
+
+  if (!success) goto err;
+
+  *result = arena;
 
   return 0;
+
+err:
+  mi_free(arena);
+
+  return -1;
 }
 
-int
-mem_thread_destroy () {
-  rpmalloc_thread_finalize(true);
-
-  return 0;
-}
-
-void *
-mem_alloc (size_t size) {
-  return rpmalloc(size);
-}
-
-void *
-mem_aligned_alloc (size_t alignment, size_t size) {
-  return rpaligned_alloc(alignment, size);
+void
+mem_arena_destroy (mem_arena_t *arena) {
+  mi_free(arena);
 }
 
 void *
-mem_calloc (size_t count, size_t size) {
-  return rpcalloc(count, size);
+mem_alloc (mem_heap_t *heap, size_t size) {
+  return mi_heap_malloc(heap->heap, size);
 }
 
 void *
-mem_aligned_calloc (size_t alignment, size_t count, size_t size) {
-  return rpaligned_calloc(alignment, count, size);
+mem_alloc_aligned (mem_heap_t *heap, size_t size, size_t alignment) {
+  return mi_heap_malloc_aligned(heap->heap, size, alignment);
 }
 
 void *
-mem_realloc (void *ptr, size_t size) {
-  return rprealloc(ptr, size);
+mem_zalloc (mem_heap_t *heap, size_t size) {
+  return mi_heap_zalloc(heap->heap, size);
 }
 
 void *
-mem_aligned_realloc (void *ptr, size_t alignment, size_t size) {
-  return rpaligned_realloc(ptr, alignment, size, 0, 0);
+mem_zalloc_aligned (mem_heap_t *heap, size_t size, size_t alignment) {
+  return mi_heap_zalloc_aligned(heap->heap, size, alignment);
+}
+
+void *
+mem_calloc (mem_heap_t *heap, size_t count, size_t size) {
+  return mi_heap_calloc(heap->heap, count, size);
+}
+
+void *
+mem_calloc_aligned (mem_heap_t *heap, size_t count, size_t size, size_t alignment) {
+  return mi_heap_calloc_aligned(heap->heap, count, size, alignment);
+}
+
+void *
+mem_realloc (mem_heap_t *heap, void *ptr, size_t size) {
+  return mi_heap_realloc(heap->heap, ptr, size);
+}
+
+void *
+mem_realloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
+  return mi_heap_realloc_aligned(heap->heap, ptr, size, alignment);
+}
+
+void *
+mem_rezalloc (mem_heap_t *heap, void *ptr, size_t size) {
+  return mi_heap_rezalloc(heap->heap, ptr, size);
+}
+
+void *
+mem_rezalloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
+  return mi_heap_rezalloc_aligned(heap->heap, ptr, size, alignment);
+}
+
+void *
+mem_recalloc (mem_heap_t *heap, void *ptr, size_t count, size_t size) {
+  return mi_heap_recalloc(heap->heap, ptr, count, size);
+}
+
+void *
+mem_recalloc_aligned (mem_heap_t *heap, void *ptr, size_t count, size_t size, size_t alignment) {
+  return mi_heap_recalloc_aligned(heap->heap, ptr, count, size, alignment);
 }
 
 size_t
 mem_usable_size (const void *ptr) {
-  return rpmalloc_usable_size((void *) ptr);
+  return mi_usable_size(ptr);
 }
 
 void
 mem_free (void *ptr) {
-  rpfree(ptr);
+  mi_free(ptr);
 }
