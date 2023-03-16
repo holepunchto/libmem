@@ -13,13 +13,13 @@ struct mem_arena_s {
 };
 
 int
-mem_heap_init (mem_arena_t *arena, mem_heap_t **result) {
+mem_heap_init (mem_heap_config_t *config, mem_heap_t **result) {
   mem_heap_t *heap = mi_malloc(sizeof(mem_heap_t));
 
   if (heap == NULL) return -1;
 
-  if (arena) {
-    heap->heap = mi_heap_new_in_arena(arena->id);
+  if (config && config->arena) {
+    heap->heap = mi_heap_new_in_arena(config->arena->id);
   } else {
     heap->heap = mi_heap_new();
   }
@@ -43,7 +43,7 @@ mem_heap_destroy (mem_heap_t *heap) {
 }
 
 int
-mem_arena_init (void *memory, size_t size, mem_arena_t **result) {
+mem_arena_init (void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result) {
   mem_arena_t *arena = mi_malloc(sizeof(mem_arena_t));
 
   if (arena == NULL) return -1;
@@ -51,9 +51,9 @@ mem_arena_init (void *memory, size_t size, mem_arena_t **result) {
   bool success = mi_manage_os_memory_ex(
     memory,
     size,
-    true /* is_committed */,
-    false /* is_large */,
-    true /* is_zero */,
+    config ? config->committed : true /* is_committed */,
+    config ? config->large : false /* is_large */,
+    config ? config->zero : true /* is_zero */,
     -1,
     true /* is_exclusive */,
     &arena->id

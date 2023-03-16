@@ -17,10 +17,10 @@ main () {
   assert(mem != NULL);
 
   mem_arena_t *arena;
-  e = mem_arena_init(mem, ARENA_SIZE, &arena);
+  e = mem_arena_init(mem, ARENA_SIZE, NULL, &arena);
 
   mem_heap_t *heap;
-  e = mem_heap_init(arena, &heap);
+  e = mem_heap_init(&(mem_heap_config_t){.arena = arena}, &heap);
   assert(e == 0);
 
   void *ptr = mem_alloc(heap, 1024);
