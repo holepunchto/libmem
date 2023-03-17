@@ -1,5 +1,6 @@
 list(APPEND tests
-  map
+  arena
+  basic
 )
 
 foreach(test IN LISTS tests)
@@ -11,15 +12,15 @@ foreach(test IN LISTS tests)
       mem_shared
   )
 
-  target_include_directories(
-    ${test}
-    PRIVATE
-      $<TARGET_PROPERTY:mem,INTERFACE_INCLUDE_DIRECTORIES>
-  )
-
   add_test(
     NAME ${test}
     COMMAND ${test}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
+
+  set_tests_properties(
+    ${test}
+    PROPERTIES
+    TIMEOUT 30
   )
 endforeach()

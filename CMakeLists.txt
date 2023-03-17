@@ -2,6 +2,18 @@ cmake_minimum_required(VERSION 3.22)
 
 project(mem C)
 
+option(MEM_SECURE OFF)
+
+set(MI_OVERRIDE OFF)
+set(MI_SECURE ${MEM_SECURE})
+set(MI_BUILD_STATIC OFF)
+set(MI_BUILD_OBJECT OFF)
+set(MI_BUILD_TESTS OFF)
+
+if(NOT TARGET mimalloc)
+  add_subdirectory(vendor/mimalloc EXCLUDE_FROM_ALL)
+endif()
+
 add_library(mem OBJECT)
 
 set_target_properties(
@@ -17,8 +29,6 @@ target_sources(
     include/mem.h
   PRIVATE
     src/mem.c
-    vendor/rpmalloc/rpmalloc/rpmalloc.h
-    vendor/rpmalloc/rpmalloc/rpmalloc.c
 )
 
 target_include_directories(
@@ -26,10 +36,10 @@ target_include_directories(
   PUBLIC
     include
   PRIVATE
-    vendor/rpmalloc/rpmalloc
+    $<TARGET_PROPERTY:mimalloc,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-add_library(mem_shared SHARED $<TARGET_OBJECTS:mem>)
+add_library(mem_shared SHARED $<TARGET_OBJECTS:mem> $<TARGET_OBJECTS:mimalloc>)
 
 set_target_properties(
   mem_shared
@@ -38,7 +48,7 @@ set_target_properties(
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
-add_library(mem_static STATIC $<TARGET_OBJECTS:mem>)
+add_library(mem_static STATIC $<TARGET_OBJECTS:mem> $<TARGET_OBJECTS:mimalloc>)
 
 set_target_properties(
   mem_static

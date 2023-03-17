@@ -1,4 +1,4 @@
-[submodule "vendor/rpmalloc"]
-	path = vendor/rpmalloc
-	url = git@github.com:mjansson/rpmalloc.git
+[submodule "vendor/mimalloc"]
+	path = vendor/mimalloc
+	url = git@github.com:microsoft/mimalloc.git
 	shallow = true
