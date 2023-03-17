@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.22)
 
 project(mem C)
 
+option(MEM_SECURE OFF)
+
 set(MI_OVERRIDE OFF)
+set(MI_SECURE ${MEM_SECURE})
 set(MI_BUILD_STATIC OFF)
 set(MI_BUILD_OBJECT OFF)
 set(MI_BUILD_TESTS OFF)
