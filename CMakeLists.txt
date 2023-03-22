@@ -54,6 +54,7 @@ set_target_properties(
   mem_static
   PROPERTIES
   OUTPUT_NAME mem
+  PREFIX lib
 )
 
 install(TARGETS mem_shared mem_static)
