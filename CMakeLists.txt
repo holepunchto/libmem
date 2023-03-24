@@ -38,7 +38,12 @@ if(NOT TARGET mimalloc)
   target_compile_definitions(
     mimalloc
     PRIVATE
+      # Disable configuring mimalloc through environment variables.
       MI_NO_GETENV=1
+
+      # Set the debugging level to 1 in debug builds, otherwise disable it
+      # completely. Mimalloc defaults to 2, which is still somewhat noisy;
+      # we're really only interested in actual errors.
       MI_DEBUG=$<IF:$<CONFIG:Debug>,1,0>
   )
 
