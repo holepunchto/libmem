@@ -44,12 +44,6 @@ if(NOT TARGET mimalloc)
       # Disable debug information. We use memory sanitizers instead.
       MI_DEBUG=0
   )
-
-  target_compile_options(
-    mimalloc
-    PRIVATE
-      -Wno-unused-parameter
-  )
 endif()
 
 add_library(mem OBJECT)
