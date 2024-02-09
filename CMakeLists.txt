@@ -71,7 +71,7 @@ target_include_directories(
     $<TARGET_PROPERTY:mimalloc,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-add_library(mem_shared SHARED $<TARGET_OBJECTS:mem> $<TARGET_OBJECTS:mimalloc>)
+add_library(mem_shared SHARED $<TARGET_OBJECTS:mimalloc>)
 
 set_target_properties(
   mem_shared
@@ -80,7 +80,13 @@ set_target_properties(
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
-add_library(mem_static STATIC $<TARGET_OBJECTS:mem> $<TARGET_OBJECTS:mimalloc>)
+target_link_libraries(
+  mem_shared
+  PUBLIC
+    mem
+)
+
+add_library(mem_static STATIC $<TARGET_OBJECTS:mimalloc>)
 
 set_target_properties(
   mem_static
@@ -89,11 +95,18 @@ set_target_properties(
   PREFIX lib
 )
 
+target_link_libraries(
+  mem_static
+  PUBLIC
+    mem
+)
+
 install(TARGETS mem_shared mem_static)
 
 install(FILES include/mem.h DESTINATION include)
 
 if(PROJECT_IS_TOP_LEVEL)
   enable_testing()
+
   add_subdirectory(test)
 endif()
