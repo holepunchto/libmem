@@ -1,4 +1,4 @@
 [submodule "vendor/mimalloc"]
 	path = vendor/mimalloc
-	url = git@github.com:microsoft/mimalloc.git
+	url = ../../microsoft/mimalloc.git
 	shallow = true
