@@ -43,6 +43,11 @@ if(NOT TARGET mimalloc)
 
       # Disable debug information. We use memory sanitizers instead.
       MI_DEBUG=0
+
+      # Ensure that DllMain handlers are correctly set up on Windows by
+      # pretending to be a shared library.
+      MI_SHARED_LIB
+      MI_SHARED_LIB_EXPORT
   )
 
   add_library(mimalloc ALIAS mimalloc-obj)
