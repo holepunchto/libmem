@@ -73,7 +73,7 @@ target_include_directories(
     $<TARGET_PROPERTY:mimalloc,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-add_library(mem_shared SHARED $<TARGET_OBJECTS:mimalloc>)
+add_library(mem_shared SHARED)
 
 set_target_properties(
   mem_shared
@@ -86,9 +86,11 @@ target_link_libraries(
   mem_shared
   PUBLIC
     mem
+  PRIVATE
+    mimalloc
 )
 
-add_library(mem_static STATIC $<TARGET_OBJECTS:mimalloc>)
+add_library(mem_static STATIC)
 
 set_target_properties(
   mem_static
@@ -101,6 +103,8 @@ target_link_libraries(
   mem_static
   PUBLIC
     mem
+  PRIVATE
+    mimalloc
 )
 
 install(TARGETS mem_shared mem_static)
