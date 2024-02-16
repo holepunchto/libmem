@@ -59,6 +59,8 @@ target_sources(
   mem
   INTERFACE
     include/mem.h
+  PUBLIC
+    $<TARGET_OBJECTS:mimalloc>
   PRIVATE
     src/mem.c
 )
