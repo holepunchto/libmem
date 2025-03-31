@@ -18,6 +18,7 @@ main() {
 
   mem_arena_t *arena;
   e = mem_arena_init(mem, ARENA_SIZE, NULL, &arena);
+  assert(e == 0);
 
   mem_heap_t *heap;
   e = mem_heap_init(&(mem_heap_config_t) {.arena = arena}, &heap);
@@ -29,5 +30,10 @@ main() {
   mem_free(ptr);
 
   mem_heap_destroy(heap);
+
+  mem_arena_destroy(arena);
+
+  mem_free(mem);
+
   mem_heap_destroy(global_heap);
 }

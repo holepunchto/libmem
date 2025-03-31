@@ -80,12 +80,8 @@ target_include_directories(
   mem
   PUBLIC
     include
-)
-
-target_link_libraries(
-  mem
   PRIVATE
-    mimalloc
+    $<TARGET_PROPERTY:mimalloc,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 add_library(mem_shared SHARED)
