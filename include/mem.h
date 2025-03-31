@@ -45,58 +45,58 @@ struct mem_arena_config_s {
 };
 
 int
-mem_heap_init (mem_heap_config_t *config, mem_heap_t **result);
+mem_heap_init(mem_heap_config_t *config, mem_heap_t **result);
 
 void
-mem_heap_destroy (mem_heap_t *heap);
+mem_heap_destroy(mem_heap_t *heap);
 
 int
-mem_arena_init (void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result);
+mem_arena_init(void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result);
 
 void
-mem_arena_destroy (mem_arena_t *arena);
+mem_arena_destroy(mem_arena_t *arena);
 
 void *
-mem_alloc (mem_heap_t *heap, size_t size);
+mem_alloc(mem_heap_t *heap, size_t size);
 
 void *
-mem_alloc_aligned (mem_heap_t *heap, size_t size, size_t alignment);
+mem_alloc_aligned(mem_heap_t *heap, size_t size, size_t alignment);
 
 void *
-mem_zalloc (mem_heap_t *heap, size_t size);
+mem_zalloc(mem_heap_t *heap, size_t size);
 
 void *
-mem_zalloc_aligned (mem_heap_t *heap, size_t size, size_t alignment);
+mem_zalloc_aligned(mem_heap_t *heap, size_t size, size_t alignment);
 
 void *
-mem_calloc (mem_heap_t *heap, size_t count, size_t size);
+mem_calloc(mem_heap_t *heap, size_t count, size_t size);
 
 void *
-mem_calloc_aligned (mem_heap_t *heap, size_t count, size_t size, size_t alignment);
+mem_calloc_aligned(mem_heap_t *heap, size_t count, size_t size, size_t alignment);
 
 void *
-mem_realloc (mem_heap_t *heap, void *ptr, size_t size);
+mem_realloc(mem_heap_t *heap, void *ptr, size_t size);
 
 void *
-mem_realloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment);
+mem_realloc_aligned(mem_heap_t *heap, void *ptr, size_t size, size_t alignment);
 
 void *
-mem_rezalloc (mem_heap_t *heap, void *ptr, size_t size);
+mem_rezalloc(mem_heap_t *heap, void *ptr, size_t size);
 
 void *
-mem_rezalloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment);
+mem_rezalloc_aligned(mem_heap_t *heap, void *ptr, size_t size, size_t alignment);
 
 void *
-mem_recalloc (mem_heap_t *heap, void *ptr, size_t count, size_t size);
+mem_recalloc(mem_heap_t *heap, void *ptr, size_t count, size_t size);
 
 void *
-mem_recalloc_aligned (mem_heap_t *heap, void *ptr, size_t count, size_t size, size_t alignment);
+mem_recalloc_aligned(mem_heap_t *heap, void *ptr, size_t count, size_t size, size_t alignment);
 
 size_t
-mem_usable_size (const void *ptr);
+mem_usable_size(const void *ptr);
 
 void
-mem_free (void *ptr);
+mem_free(void *ptr);
 
 #ifdef __cplusplus
 }

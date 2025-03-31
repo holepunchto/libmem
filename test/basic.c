@@ -3,7 +3,7 @@
 #include "../include/mem.h"
 
 int
-main () {
+main() {
   int e;
 
   mem_heap_t *heap;

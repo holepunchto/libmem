@@ -13,7 +13,7 @@ struct mem_arena_s {
 };
 
 int
-mem_heap_init (mem_heap_config_t *config, mem_heap_t **result) {
+mem_heap_init(mem_heap_config_t *config, mem_heap_t **result) {
   mem_heap_t *heap = mi_malloc(sizeof(mem_heap_t));
 
   if (heap == NULL) return -1;
@@ -37,13 +37,13 @@ err:
 }
 
 void
-mem_heap_destroy (mem_heap_t *heap) {
+mem_heap_destroy(mem_heap_t *heap) {
   mi_heap_destroy(heap->heap);
   mi_free(heap);
 }
 
 int
-mem_arena_init (void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result) {
+mem_arena_init(void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result) {
   mem_arena_t *arena = mi_malloc(sizeof(mem_arena_t));
 
   if (arena == NULL) return -1;
@@ -72,76 +72,76 @@ err:
 }
 
 void
-mem_arena_destroy (mem_arena_t *arena) {
+mem_arena_destroy(mem_arena_t *arena) {
   mi_free(arena);
 }
 
 void *
-mem_alloc (mem_heap_t *heap, size_t size) {
+mem_alloc(mem_heap_t *heap, size_t size) {
   return mi_heap_malloc(heap->heap, size);
 }
 
 void *
-mem_alloc_aligned (mem_heap_t *heap, size_t size, size_t alignment) {
+mem_alloc_aligned(mem_heap_t *heap, size_t size, size_t alignment) {
   return mi_heap_malloc_aligned(heap->heap, size, alignment);
 }
 
 void *
-mem_zalloc (mem_heap_t *heap, size_t size) {
+mem_zalloc(mem_heap_t *heap, size_t size) {
   return mi_heap_zalloc(heap->heap, size);
 }
 
 void *
-mem_zalloc_aligned (mem_heap_t *heap, size_t size, size_t alignment) {
+mem_zalloc_aligned(mem_heap_t *heap, size_t size, size_t alignment) {
   return mi_heap_zalloc_aligned(heap->heap, size, alignment);
 }
 
 void *
-mem_calloc (mem_heap_t *heap, size_t count, size_t size) {
+mem_calloc(mem_heap_t *heap, size_t count, size_t size) {
   return mi_heap_calloc(heap->heap, count, size);
 }
 
 void *
-mem_calloc_aligned (mem_heap_t *heap, size_t count, size_t size, size_t alignment) {
+mem_calloc_aligned(mem_heap_t *heap, size_t count, size_t size, size_t alignment) {
   return mi_heap_calloc_aligned(heap->heap, count, size, alignment);
 }
 
 void *
-mem_realloc (mem_heap_t *heap, void *ptr, size_t size) {
+mem_realloc(mem_heap_t *heap, void *ptr, size_t size) {
   return mi_heap_realloc(heap->heap, ptr, size);
 }
 
 void *
-mem_realloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
+mem_realloc_aligned(mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
   return mi_heap_realloc_aligned(heap->heap, ptr, size, alignment);
 }
 
 void *
-mem_rezalloc (mem_heap_t *heap, void *ptr, size_t size) {
+mem_rezalloc(mem_heap_t *heap, void *ptr, size_t size) {
   return mi_heap_rezalloc(heap->heap, ptr, size);
 }
 
 void *
-mem_rezalloc_aligned (mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
+mem_rezalloc_aligned(mem_heap_t *heap, void *ptr, size_t size, size_t alignment) {
   return mi_heap_rezalloc_aligned(heap->heap, ptr, size, alignment);
 }
 
 void *
-mem_recalloc (mem_heap_t *heap, void *ptr, size_t count, size_t size) {
+mem_recalloc(mem_heap_t *heap, void *ptr, size_t count, size_t size) {
   return mi_heap_recalloc(heap->heap, ptr, count, size);
 }
 
 void *
-mem_recalloc_aligned (mem_heap_t *heap, void *ptr, size_t count, size_t size, size_t alignment) {
+mem_recalloc_aligned(mem_heap_t *heap, void *ptr, size_t count, size_t size, size_t alignment) {
   return mi_heap_recalloc_aligned(heap->heap, ptr, count, size, alignment);
 }
 
 size_t
-mem_usable_size (const void *ptr) {
+mem_usable_size(const void *ptr) {
   return mi_usable_size(ptr);
 }
 
 void
-mem_free (void *ptr) {
+mem_free(void *ptr) {
   mi_free(ptr);
 }
