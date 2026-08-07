@@ -47,6 +47,8 @@ declare_port(
   ENTRYPOINT "${CMAKE_CURRENT_LIST_DIR}/autogen.sh"
   BYPRODUCTS lib/libjemalloc.a
   ARGS ${args}
+  PATCHES
+    patches/01-install-sh-verbose.patch
 )
 
 add_library(jemalloc STATIC IMPORTED GLOBAL)

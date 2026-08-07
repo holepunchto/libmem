@@ -1,0 +1,14 @@
+diff --git a/build-aux/install-sh b/build-aux/install-sh
+index ebc6691..529e31b 100755
+--- a/build-aux/install-sh
++++ b/build-aux/install-sh
+@@ -60,6 +60,9 @@ while [ x"$1" != x ]; do
+ 	    shift
+ 	    continue;;
+ 
++	-v) shift
++	    continue;;
++
+ 	-d) dir_arg=true
+ 	    shift
+ 	    continue;;
