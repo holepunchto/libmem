@@ -3,43 +3,40 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if INTPTR_MAX > INT32_MAX
-#define MEM_ARENA_ALIGNMENT (32 * 1024 * 1024)
-#else
-#define MEM_ARENA_ALIGNMENT (4 * 1024 * 1024)
-#endif
-
 typedef struct mem_heap_s mem_heap_t;
 typedef struct mem_heap_config_s mem_heap_config_t;
-typedef struct mem_arena_s mem_arena_t;
-typedef struct mem_arena_config_s mem_arena_config_t;
 
 struct mem_heap_config_s {
   /**
-   * The optional arena backing the heap.
+   * The optional memory backing the heap. When `NULL`, the heap is backed by
+   * memory obtained from the operating system. When non-`NULL`, all allocations
+   * made from the heap are served from this region, which must remain valid for
+   * the lifetime of the heap and is owned by the caller.
    */
-  mem_arena_t *arena;
-};
+  void *memory;
 
-struct mem_arena_config_s {
   /**
-   * `true` if the memory backing the arena is already committed, otherwise `false`.
+   * The size of the memory backing the heap. Only read when `memory` is non-`NULL`.
+   */
+  size_t size;
+
+  /**
+   * `true` if the memory backing the heap is already committed, otherwise `false`.
    */
   bool committed;
 
   /**
-   * `true` if the memory backing the arena uses large OS pages, otherwise `false`.
+   * `true` if the memory backing the heap uses large OS pages, otherwise `false`.
    */
   bool large;
 
   /**
-   * `true` if the memory backing the arena has already been zero'ed, otherwise `false`.
+   * `true` if the memory backing the heap has already been zero'ed, otherwise `false`.
    */
   bool zero;
 };
@@ -49,12 +46,6 @@ mem_heap_init(mem_heap_config_t *config, mem_heap_t **result);
 
 void
 mem_heap_destroy(mem_heap_t *heap);
-
-int
-mem_arena_init(void *memory, size_t size, mem_arena_config_t *config, mem_arena_t **result);
-
-void
-mem_arena_destroy(mem_arena_t *arena);
 
 void *
 mem_alloc(mem_heap_t *heap, size_t size);

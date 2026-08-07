@@ -1,61 +1,34 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 4.0)
 
-find_package(cmake-fetch REQUIRED PATHS node_modules/cmake-fetch)
+find_package(cmake-ports REQUIRED PATHS node_modules/cmake-ports)
 
 project(mem C)
 
-set(MEM_SECURE OFF CACHE BOOL "Use full security mitigations, such as guard pages, allocation randomization, double-free mitigation, and free-list corruption detection")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-# Make sure to force every available configuration option so mimalloc is
-# compiled exactly as we expect.
+find_package(Threads REQUIRED)
 
-set(MI_SECURE ${MEM_SECURE})
-set(MI_SECURE OFF)
-set(MI_DEBUG_FULL OFF)
-set(MI_PADDING OFF)
-set(MI_OVERRIDE OFF)
-set(MI_XMALLOC OFF)
-set(MI_SHOW_ERRORS OFF)
-set(MI_GUARDED OFF)
-set(MI_USE_CXX OFF)
-set(MI_OPT_ARCH OFF)
-set(MI_OPT_SIMD OFF)
-set(MI_SEE_ASM OFF)
-set(MI_OSX_INTERPOSE OFF)
-set(MI_OSX_ZONE OFF)
-set(MI_WIN_REDIRECT OFF)
-set(MI_WIN_USE_FIXED_TLS OFF)
-set(MI_LOCAL_DYNAMIC_TLS OFF)
-set(MI_LIBC_MUSL OFF)
+option(MEM_OVERRIDE "Override the system allocator so that all malloc()/free() calls, including those made by dynamically loaded code, are served by jemalloc" OFF)
 
-set(MI_DEBUG_TSAN OFF)
-set(MI_DEBUG_UBSAN OFF)
-set(MI_TRACK_VALGRIND OFF)
-set(MI_TRACK_ASAN OFF)
-set(MI_TRACK_ETW OFF)
+option(MEM_OVERRIDE_CXX "Additionally override the C++ operator new and operator delete; requires MEM_OVERRIDE and links the C++ runtime" OFF)
 
-set(MI_BUILD_SHARED ON)
-set(MI_BUILD_STATIC OFF)
-set(MI_BUILD_OBJECT OFF)
-set(MI_BUILD_TESTS OFF)
+if(MEM_OVERRIDE_CXX AND NOT MEM_OVERRIDE)
+  message(FATAL_ERROR "MEM_OVERRIDE_CXX requires MEM_OVERRIDE")
+endif()
 
-set(MI_SKIP_COLLECT_ON_EXIT OFF)
-set(MI_NO_PADDING OFF)
-set(MI_INSTALL_TOPLEVEL OFF)
-set(MI_NO_THP OFF)
-set(MI_EXTRA_CPPDEFS "")
+set(mem_features)
 
-fetch_package("github:microsoft/mimalloc@3.0.3")
+if(MEM_OVERRIDE)
+  list(APPEND mem_features override)
+endif()
 
-target_compile_definitions(
-  mimalloc
-  PRIVATE
-    # Disable configuring mimalloc through environment variables.
-    MI_NO_GETENV=1
+if(MEM_OVERRIDE_CXX)
+  enable_language(CXX)
 
-    # Disable debug information. We use memory sanitizers instead.
-    MI_DEBUG=0
-)
+  list(APPEND mem_features cxx)
+endif()
+
+find_port(jemalloc FEATURES ${mem_features})
 
 add_library(mem OBJECT)
 
@@ -70,8 +43,6 @@ target_sources(
   mem
   INTERFACE
     include/mem.h
-  PUBLIC
-    $<TARGET_OBJECTS:mimalloc>
   PRIVATE
     src/mem.c
 )
@@ -80,9 +51,30 @@ target_include_directories(
   mem
   PUBLIC
     include
-  PRIVATE
-    $<TARGET_PROPERTY:mimalloc,INTERFACE_INCLUDE_DIRECTORIES>
 )
+
+if(MEM_OVERRIDE)
+  target_compile_definitions(
+    mem
+    PRIVATE
+      MEM_OVERRIDE
+  )
+
+  # Force every jemalloc object to be linked, including the Darwin malloc zone
+  # registration that is pulled in through a constructor and would otherwise be
+  # dropped from the static archive, so that the override takes effect.
+  target_link_libraries(
+    mem
+    PUBLIC
+      "$<LINK_LIBRARY:WHOLE_ARCHIVE,jemalloc>"
+  )
+else()
+  target_link_libraries(
+    mem
+    PUBLIC
+      jemalloc
+  )
+endif()
 
 add_library(mem_shared SHARED)
 
