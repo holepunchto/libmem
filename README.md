@@ -1,6 +1,6 @@
 # libmem
 
-General purpose memory allocator for C built on <https://github.com/microsoft/mimalloc>. It's built around explicit heaps and provides no global allocation.
+General purpose memory allocator for C built on <https://github.com/jemalloc/jemalloc>. It's built around explicit heaps and provides no global allocation.
 
 ## API
 

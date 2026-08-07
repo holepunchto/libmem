@@ -1,9 +1,9 @@
 #include <assert.h>
-#include <stdio.h>
 
 #include "../include/mem.h"
 
-#define ARENA_SIZE (128 * 1024 * 1024)
+#define ARENA_SIZE      (128 * 1024 * 1024)
+#define ARENA_ALIGNMENT (2 * 1024 * 1024)
 
 int
 main() {
@@ -13,15 +13,11 @@ main() {
   e = mem_heap_init(NULL, &global_heap);
   assert(e == 0);
 
-  void *mem = mem_zalloc_aligned(global_heap, ARENA_SIZE, MEM_ARENA_ALIGNMENT);
+  void *mem = mem_zalloc_aligned(global_heap, ARENA_SIZE, ARENA_ALIGNMENT);
   assert(mem != NULL);
 
-  mem_arena_t *arena;
-  e = mem_arena_init(mem, ARENA_SIZE, NULL, &arena);
-  assert(e == 0);
-
   mem_heap_t *heap;
-  e = mem_heap_init(&(mem_heap_config_t) {.arena = arena}, &heap);
+  e = mem_heap_init(&(mem_heap_config_t) {.memory = mem, .size = ARENA_SIZE, .zero = true}, &heap);
   assert(e == 0);
 
   void *ptr = mem_alloc(heap, 1024);
@@ -30,8 +26,6 @@ main() {
   mem_free(ptr);
 
   mem_heap_destroy(heap);
-
-  mem_arena_destroy(arena);
 
   mem_free(mem);
 

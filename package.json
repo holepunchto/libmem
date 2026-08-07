@@ -12,6 +12,7 @@
   },
   "homepage": "https://github.com/holepunchto/libmem#readme",
   "devDependencies": {
-    "cmake-fetch": "^1.0.0"
+    "cmake-fetch": "^1.0.0",
+    "cmake-ports": "^1.10.1"
   }
 }
