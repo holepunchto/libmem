@@ -6,12 +6,20 @@ set(args
   # jemalloc derives its version from `git describe`, which fails on the shallow
   # tag checkout that the port performs. Pin it explicitly.
   --with-version=${version}-0-g0000000000000000000000000000000000000000
+
+  # jemalloc's static archive is built from non-position-independent objects by
+  # default, which cannot be linked into a shared library. Match libmem's
+  # position-independent code by adding the PIC flag to every object. jemalloc
+  # appends `EXTRA_CFLAGS` to its own flags, so this leaves its optimization
+  # settings intact.
+  EXTRA_CFLAGS=${CMAKE_C_COMPILE_OPTIONS_PIC}
 )
 
 if("cxx" IN_LIST features)
   # Build jemalloc's C++ integration so that it also defines `operator new` and
   # `operator delete`. Their mangled names cannot be prefixed, so this is only
   # meaningful together with the global allocator override.
+  list(APPEND args EXTRA_CXXFLAGS=${CMAKE_C_COMPILE_OPTIONS_PIC})
 else()
   # We only use the C API.
   list(APPEND args --disable-cxx)
