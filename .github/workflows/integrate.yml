@@ -34,6 +34,13 @@ jobs:
       - uses: holepunchto/actions/bare-base@v1
       - run: brew install autoconf
         if: ${{ matrix.platform == 'darwin' }}
+      - run: choco install msys2
+        if: ${{ matrix.platform == 'win32' }}
+      - run: pacman --noconfirm -S autoconf
+        shell: C:\tools\msys64\usr\bin\bash.exe -e {0}
+        env:
+          PATH: C:\tools\msys64\usr\bin
+        if: ${{ matrix.platform == 'win32' }}
       - uses: holepunchto/actions/compile-prebuilds@v1
         with:
           platform: ${{ matrix.platform }}
