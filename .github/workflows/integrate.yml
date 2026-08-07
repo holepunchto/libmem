@@ -36,7 +36,7 @@ jobs:
         if: ${{ matrix.platform == 'darwin' }}
       - run: choco install msys2
         if: ${{ matrix.platform == 'win32' }}
-      - run: pacman --noconfirm -S autoconf
+      - run: pacman --noconfirm -S make autoconf
         shell: C:\tools\msys64\usr\bin\bash.exe -e {0}
         env:
           PATH: C:\tools\msys64\usr\bin
