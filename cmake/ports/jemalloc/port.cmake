@@ -55,6 +55,14 @@ if(CMAKE_C_COMPILER)
   endif()
 endif()
 
+if(CMAKE_AR)
+  cmake_path(GET CMAKE_AR PARENT_PATH ar_directory)
+  cmake_path(GET CMAKE_AR FILENAME ar_filename)
+
+  list(APPEND env "AR=${ar_filename}")
+  list(APPEND env --modify "PATH=path_list_prepend:${ar_directory}")
+endif()
+
 if(WIN32)
   set(lib lib/jemalloc_s.lib)
 else()
@@ -71,6 +79,7 @@ declare_port(
   ENV ${env}
   PATCHES
     patches/01-install-sh-verbose.patch
+    patches/02-msvc-archiver.patch
 )
 
 add_library(jemalloc STATIC IMPORTED GLOBAL)
