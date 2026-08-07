@@ -6,6 +6,28 @@
 
 #include "../include/mem.h"
 
+// When `MEM_OVERRIDE` is set, jemalloc is built without a symbol prefix so that
+// it provides the standard `malloc()`, `free()`, and friends and overrides the
+// system allocator; its non-standard API is then unprefixed. Otherwise, it is
+// built with a `je_` prefix and does not touch the global allocator.
+#ifdef MEM_OVERRIDE
+#define mem__malloc             malloc
+#define mem__free               free
+#define mem__mallocx            mallocx
+#define mem__rallocx            rallocx
+#define mem__dallocx            dallocx
+#define mem__mallctl            mallctl
+#define mem__malloc_usable_size malloc_usable_size
+#else
+#define mem__malloc             je_malloc
+#define mem__free               je_free
+#define mem__mallocx            je_mallocx
+#define mem__rallocx            je_rallocx
+#define mem__dallocx            je_dallocx
+#define mem__mallctl            je_mallctl
+#define mem__malloc_usable_size je_malloc_usable_size
+#endif
+
 // Bookkeeping for a heap backed by a caller-provided memory region. The region
 // is handed out to jemalloc through extent hooks by a simple bump allocator;
 // nothing is ever returned to the operating system since the caller owns the
@@ -96,7 +118,7 @@ mem__extent_merge(extent_hooks_t *hooks, void *addr_a, size_t size_a, void *addr
 
 int
 mem_heap_init(mem_heap_config_t *config, mem_heap_t **result) {
-  mem_heap_t *heap = je_malloc(sizeof(mem_heap_t));
+  mem_heap_t *heap = mem__malloc(sizeof(mem_heap_t));
 
   if (heap == NULL) return -1;
 
@@ -106,7 +128,7 @@ mem_heap_init(mem_heap_config_t *config, mem_heap_t **result) {
   size_t len = sizeof(arena);
 
   if (config && config->memory) {
-    struct mem_backing_s *backing = je_malloc(sizeof(struct mem_backing_s));
+    struct mem_backing_s *backing = mem__malloc(sizeof(struct mem_backing_s));
 
     if (backing == NULL) goto err;
 
@@ -132,13 +154,13 @@ mem_heap_init(mem_heap_config_t *config, mem_heap_t **result) {
 
     extent_hooks_t *hooks = &backing->hooks;
 
-    if (je_mallctl("arenas.create", &arena, &len, &hooks, sizeof(hooks)) != 0) {
-      je_free(backing);
+    if (mem__mallctl("arenas.create", &arena, &len, &hooks, sizeof(hooks)) != 0) {
+      mem__free(backing);
 
       goto err;
     }
   } else {
-    if (je_mallctl("arenas.create", &arena, &len, NULL, 0) != 0) goto err;
+    if (mem__mallctl("arenas.create", &arena, &len, NULL, 0) != 0) goto err;
   }
 
   heap->arena = arena;
@@ -148,7 +170,7 @@ mem_heap_init(mem_heap_config_t *config, mem_heap_t **result) {
   return 0;
 
 err:
-  je_free(heap);
+  mem__free(heap);
 
   return -1;
 }
@@ -160,10 +182,10 @@ mem_heap_destroy(mem_heap_t *heap) {
 
   // Discards all of the arena's live allocations at once, matching the bulk
   // free semantics of the previous mimalloc based implementation.
-  je_mallctl(command, NULL, NULL, NULL, 0);
+  mem__mallctl(command, NULL, NULL, NULL, 0);
 
-  je_free(heap->backing);
-  je_free(heap);
+  mem__free(heap->backing);
+  mem__free(heap);
 }
 
 // Every allocation bypasses the thread cache so that destroying a heap's arena
@@ -192,7 +214,7 @@ mem__alloc(mem_heap_t *heap, size_t size, size_t alignment, bool zero) {
   if (zero) flags |= MALLOCX_ZERO;
 
   // jemalloc requires a non-zero size; hand out a minimal allocation instead.
-  return je_mallocx(size == 0 ? 1 : size, flags);
+  return mem__mallocx(size == 0 ? 1 : size, flags);
 }
 
 static inline void *
@@ -209,7 +231,7 @@ mem__realloc(mem_heap_t *heap, void *ptr, size_t size, size_t alignment, bool ze
 
   if (zero) flags |= MALLOCX_ZERO;
 
-  return je_rallocx(ptr, size, flags);
+  return mem__rallocx(ptr, size, flags);
 }
 
 void *
@@ -290,12 +312,12 @@ mem_recalloc_aligned(mem_heap_t *heap, void *ptr, size_t count, size_t size, siz
 
 size_t
 mem_usable_size(const void *ptr) {
-  return je_malloc_usable_size((void *) (uintptr_t) ptr);
+  return mem__malloc_usable_size((void *) (uintptr_t) ptr);
 }
 
 void
 mem_free(void *ptr) {
   if (ptr == NULL) return;
 
-  je_dallocx(ptr, MALLOCX_TCACHE_NONE);
+  mem__dallocx(ptr, MALLOCX_TCACHE_NONE);
 }
