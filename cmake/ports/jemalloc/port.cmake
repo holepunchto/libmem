@@ -78,6 +78,16 @@ target_include_directories(
   INTERFACE "${jemalloc_PREFIX}/include"
 )
 
+if(MSVC)
+  # jemalloc's public header relies on POSIX headers that MSVC does not provide.
+  # jemalloc ships shims under msvc_compat and puts them on the include path for
+  # its own build; do the same so the header compiles for consumers.
+  target_include_directories(
+    jemalloc
+    INTERFACE "${jemalloc_SOURCE_DIR}/include/msvc_compat"
+  )
+endif()
+
 if(WIN32)
   target_link_libraries(
     jemalloc
