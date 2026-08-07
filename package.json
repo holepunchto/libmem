@@ -1,6 +1,10 @@
 {
   "private": true,
   "name": "libmem",
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/holepunchto/libmem.git"
