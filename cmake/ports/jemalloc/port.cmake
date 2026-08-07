@@ -40,12 +40,18 @@ else()
   list(APPEND args --with-jemalloc-prefix=je_)
 endif()
 
+if(WIN32)
+  set(lib lib/jemalloc_s.lib)
+else()
+  set(lib lib/libjemalloc.a)
+endif()
+
 declare_port(
   "github:jemalloc/jemalloc#${version}"
   jemalloc
   AUTOTOOLS
   ENTRYPOINT "${CMAKE_CURRENT_LIST_DIR}/autogen.sh"
-  BYPRODUCTS lib/libjemalloc.a
+  BYPRODUCTS ${lib}
   ARGS ${args}
   PATCHES
     patches/01-install-sh-verbose.patch
@@ -58,7 +64,7 @@ add_dependencies(jemalloc ${jemalloc})
 set_target_properties(
   jemalloc
   PROPERTIES
-  IMPORTED_LOCATION "${jemalloc_PREFIX}/lib/libjemalloc.a"
+  IMPORTED_LOCATION "${jemalloc_PREFIX}/${lib}"
 )
 
 if("cxx" IN_LIST features)
