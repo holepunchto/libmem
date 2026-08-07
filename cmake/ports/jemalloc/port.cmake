@@ -81,7 +81,11 @@ target_include_directories(
 if(MSVC)
   # jemalloc's public header relies on POSIX headers that MSVC does not provide.
   # jemalloc ships shims under msvc_compat and puts them on the include path for
-  # its own build; do the same so the header compiles for consumers.
+  # its own build; do the same so the header compiles for consumers. The
+  # directory is created up front so the imported target validates before the
+  # source has been fetched, mirroring the install include directory above.
+  file(MAKE_DIRECTORY "${jemalloc_SOURCE_DIR}/include/msvc_compat")
+
   target_include_directories(
     jemalloc
     INTERFACE "${jemalloc_SOURCE_DIR}/include/msvc_compat"
