@@ -40,6 +40,21 @@ else()
   list(APPEND args --with-jemalloc-prefix=je_)
 endif()
 
+set(env)
+
+if(CMAKE_C_COMPILER)
+  cmake_path(GET CMAKE_C_COMPILER PARENT_PATH cc_directory)
+  cmake_path(GET CMAKE_C_COMPILER FILENAME cc_filename)
+
+  list(APPEND env "CC=${cc_filename}")
+  list(APPEND env --modify "PATH=path_list_prepend:${cc_directory}")
+
+  if(CMAKE_C_COMPILER_TARGET)
+    list(APPEND env "CFLAGS=--target=${CMAKE_C_COMPILER_TARGET}")
+    list(APPEND env "LDFLAGS=--target=${CMAKE_C_COMPILER_TARGET}")
+  endif()
+endif()
+
 if(WIN32)
   set(lib lib/jemalloc_s.lib)
 else()
@@ -53,6 +68,7 @@ declare_port(
   ENTRYPOINT "${CMAKE_CURRENT_LIST_DIR}/autogen.sh"
   BYPRODUCTS ${lib}
   ARGS ${args}
+  ENV ${env}
   PATCHES
     patches/01-install-sh-verbose.patch
 )
