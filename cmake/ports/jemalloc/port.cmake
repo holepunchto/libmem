@@ -96,6 +96,15 @@ if(MSVC)
     jemalloc
     INTERFACE "${jemalloc_SOURCE_DIR}/include/msvc_compat"
   )
+
+  # We link jemalloc as a static archive, but its public header declares the API
+  # as `__declspec(dllimport)` on MSVC unless told otherwise, which leaves the
+  # references unresolved at link time. Define `JEMALLOC_EXPORT` empty so the
+  # declarations match the static archive.
+  target_compile_definitions(
+    jemalloc
+    INTERFACE JEMALLOC_EXPORT=
+  )
 endif()
 
 if(WIN32)
