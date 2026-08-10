@@ -9,7 +9,7 @@ foreach(test IN LISTS tests)
   target_link_libraries(
     ${test}
     PRIVATE
-      mem_shared
+      mem_static
   )
 
   add_test(

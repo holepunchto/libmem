@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index f6d25f3..6c4f767 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -753,7 +753,7 @@ case "${host}" in
+ 	  EXTRA_LDFLAGS="-link -DEBUG"
+ 	  CTARGET='-Fo$@'
+ 	  LDTARGET='-Fe$@'
+-	  AR='lib'
++	  AR="${AR:-lib}"
+ 	  ARFLAGS='-nologo -out:'
+ 	  AROUT='$@'
+ 	  CC_MM=
